@@ -26,8 +26,8 @@
       <file leaf-file-name="inet_monitor.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/inet_monitor.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="142" column="4" lean-forward="false" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="4" />
+            <state relative-caret-position="505">
+              <caret line="247" column="20" lean-forward="false" selection-start-line="247" selection-start-column="20" selection-end-line="247" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -292,12 +292,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1502826704628</updated>
-      <workItem from="1502826706395" duration="762000" />
+      <workItem from="1502826706395" duration="857000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="762000" />
+    <option name="totallyTimeSpent" value="857000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1436" height="877" extended-state="6" />
@@ -339,8 +339,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/inet_monitor.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="142" column="4" lean-forward="false" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="4" />
+        <state relative-caret-position="505">
+          <caret line="247" column="20" lean-forward="false" selection-start-line="247" selection-start-column="20" selection-end-line="247" selection-end-column="20" />
           <folding />
         </state>
       </provider>
