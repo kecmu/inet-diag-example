@@ -141,8 +141,8 @@ int send_diag_msg(int sockfd){
     nlh.nlmsg_len = NLMSG_LENGTH(sizeof(conn_req));
     //In order to request a socket bound to a specific IP/port, remove
     //NLM_F_DUMP and specify the required information in conn_req.id
-    nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
-    //nlh.nlmsg_flags = NLM_F_REQUEST;
+    //nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
+    nlh.nlmsg_flags = NLM_F_REQUEST;
 
     //Example of how to only match some sockets
     //In order to match a single socket, I have to provide all fields
