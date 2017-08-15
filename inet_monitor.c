@@ -130,7 +130,7 @@ int send_diag_msg(int sockfd){
 
     //Filter out some states, to show how it is done
     conn_req.idiag_states = TCPF_ALL &
-        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE));
+        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE) | (1<<TCP_CLOSE));
     //conn_req.idiag_states = TCP_ESTABLISHED;
 
     //Request extended TCP information (it is the tcp_info struct)
@@ -147,7 +147,7 @@ int send_diag_msg(int sockfd){
     //Example of how to only match some sockets
     //In order to match a single socket, I have to provide all fields
     //sport/dport, saddr/daddr (look at dump_on_icsk)
-    //conn_req.id.idiag_sport=htons(22);
+    conn_req.id.idiag_sport=htons(22);
 
     //Avoid using compat by specifying family + protocol in header
     nlh.nlmsg_type = SOCK_DIAG_BY_FAMILY;
