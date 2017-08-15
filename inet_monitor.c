@@ -140,12 +140,13 @@ int send_diag_msg(int sockfd){
     nlh.nlmsg_len = NLMSG_LENGTH(sizeof(conn_req));
     //In order to request a socket bound to a specific IP/port, remove
     //NLM_F_DUMP and specify the required information in conn_req.id
-    nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
+    // nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
+    nlh.nlmsg_flags = NLM_F_REQUEST;
 
     //Example of how to only match some sockets
     //In order to match a single socket, I have to provide all fields
     //sport/dport, saddr/daddr (look at dump_on_icsk)
-    //conn_req.id.idiag_dport=htons(443);
+    conn_req.id.idiag_sport=htons(22);
 
     //Avoid using compat by specifying family + protocol in header
     nlh.nlmsg_type = SOCK_DIAG_BY_FAMILY;
@@ -215,7 +216,7 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
         fprintf(stderr, "Could not get required connection information\n");
         return;
     } else {
-        fprintf(stdout, "User: %s (UID: %u) Src: %s:%d Dst: %s:%d\n", 
+        fprintf(stdout, "User: %s (UID: %u) Src: %s:%d Dst: %s:%d\n",
                 uid_info == NULL ? "Not found" : uid_info->pw_name,
                 diag_msg->idiag_uid,
                 local_addr_buf, ntohs(diag_msg->id.idiag_sport), 
@@ -234,14 +235,18 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                 tcpi = (struct tcp_info*) RTA_DATA(attr);
 
                 //Output some sample data
-                fprintf(stdout, "\tState: %s RTT: %gms (var. %gms) "
+                /*fprintf(stdout, "\tState: %s RTT: %gms (var. %gms) "
                         "Recv. RTT: %gms Snd_cwnd: %u/%u\n",
                         tcp_states_map[tcpi->tcpi_state],
                         (double) tcpi->tcpi_rtt/1000, 
                         (double) tcpi->tcpi_rttvar/1000,
                         (double) tcpi->tcpi_rcv_rtt/1000, 
                         tcpi->tcpi_unacked,
-                        tcpi->tcpi_snd_cwnd);
+                        tcpi->tcpi_snd_cwnd);*/
+
+                fprintf(stdout, "State: %s lastrcv: %s \n",
+                        tcp_states_map[tcpi->tcpi_state],
+                        tcpi->tcpi_last_data_recv);
             }
             attr = RTA_NEXT(attr, rtalen); 
         }
