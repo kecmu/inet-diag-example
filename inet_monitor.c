@@ -244,10 +244,10 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                if(tcpi->tcpi_last_data_recv)
+                /*if(tcpi->tcpi_last_data_recv)
                     fprintf(stdout, "State: %s lastrcv: %s \n",
                         tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_recv);
+                        tcpi->tcpi_last_data_recv);*/
             }
             attr = RTA_NEXT(attr, rtalen); 
         }
