@@ -147,7 +147,7 @@ int send_diag_msg(int sockfd){
     //Example of how to only match some sockets
     //In order to match a single socket, I have to provide all fields
     //sport/dport, saddr/daddr (look at dump_on_icsk)
-    conn_req.id.idiag_sport=htons(22);
+    conn_req.id.idiag_sport=htons(6379);
 
     //Avoid using compat by specifying family + protocol in header
     nlh.nlmsg_type = SOCK_DIAG_BY_FAMILY;
