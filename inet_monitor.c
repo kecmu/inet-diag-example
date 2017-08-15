@@ -246,7 +246,7 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                         tcpi->tcpi_snd_cwnd);*/
 
                 fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_sent);
+                        tcpi->tcpi_last_data_sentd);
                 /*if(tcpi->tcpi_last_data_recv)
                     fprintf(stdout, "State: %s lastrcv: %s \n",
                         tcp_states_map[tcpi->tcpi_state],
