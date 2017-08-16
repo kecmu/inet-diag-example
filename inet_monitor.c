@@ -33,6 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 #include <linux/inet_diag.h>
 #include <arpa/inet.h>
 #include <pwd.h>
+#include <sys/time.h>
 
 //Kernel TCP states. /include/net/tcp_states.h
 enum{
@@ -246,8 +247,8 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_recv);
+                /*fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
+                        tcpi->tcpi_last_data_recv);*/
                 if(tcpi->tcpi_last_data_recv < 100)
                     active_conn += 1;
 
@@ -259,6 +260,21 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
 }
 
 int main(int argc, char *argv[]){
+    if(argc != 2){
+        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli");
+        return 0;
+    }
+    int samples = 0;
+    int interval = 0;
+    if (sscanf (argv[0], "%i", &samples) != 1) {
+        fprintf(stderr, "parsing first argument error");
+        return 0;
+    }
+    if (sscanf (argv[1], "%i", &interval) != 1) {
+        fprintf(stderr, "parsing second argument error");
+        return 0;
+    }
+
     int nl_sock = 0, numbytes = 0, rtalen = 0;
     struct nlmsghdr *nlh;
     uint8_t recv_buf[SOCKET_BUFFER_SIZE];
@@ -271,16 +287,18 @@ int main(int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    //Send the request for the sockets we are interested in
-    if(send_diag_msg(nl_sock) < 0){
-        perror("sendmsg: ");
-        return EXIT_FAILURE;
-    }
+    int index = 0;
+    for(index = 0; index <samples; index++){
+        //Send the request for the sockets we are interested in
+        if(send_diag_msg(nl_sock) < 0){
+            perror("sendmsg: ");
+            return EXIT_FAILURE;
+        }
 
-    //The requests can (will in most cases) come as multiple netlink messages. I
-    //need to receive all of them. Assumes no packet loss, so if the last packet
-    //(the packet with NLMSG_DONE) is lost, the application will hang.
-    while(1){
+        //The requests can (will in most cases) come as multiple netlink messages. I
+        //need to receive all of them. Assumes no packet loss, so if the last packet
+        //(the packet with NLMSG_DONE) is lost, the application will hang.
+
         numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
         nlh = (struct nlmsghdr*) recv_buf;
         current_conn = 0;
@@ -301,13 +319,20 @@ int main(int argc, char *argv[]){
 
             if(tmp >= 0)
                 current_conn += tmp;
-            fprintf(stdout, "intermediate result: %u\n", current_conn);
-
             nlh = NLMSG_NEXT(nlh, numbytes); 
         }
-        fprintf(stdout, "return result: %u\n", current_conn);
-        return EXIT_SUCCESS;
+        fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
+        usleep(interval*1000);
     }
 
     return EXIT_SUCCESS;
+}
+
+
+long long current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
 }
