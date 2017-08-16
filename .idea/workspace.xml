@@ -27,7 +27,7 @@
         <entry file="file://$PROJECT_DIR$/inet_monitor.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="450">
-              <caret line="317" column="39" lean-forward="false" selection-start-line="317" selection-start-column="39" selection-end-line="317" selection-end-column="39" />
+              <caret line="317" column="32" lean-forward="false" selection-start-line="317" selection-start-column="32" selection-end-line="317" selection-end-column="32" />
               <folding>
                 <element signature="e#5806#6140#0" expanded="true" />
               </folding>
@@ -304,12 +304,12 @@
       <option name="presentableId" value="Default" />
       <updated>1502826704628</updated>
       <workItem from="1502826706395" duration="4449000" />
-      <workItem from="1502913326235" duration="3659000" />
+      <workItem from="1502913326235" duration="3692000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8108000" />
+    <option name="totallyTimeSpent" value="8141000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1203" y="-1080" width="1920" height="1080" extended-state="6" />
@@ -362,7 +362,7 @@
     <entry file="file://$PROJECT_DIR$/inet_monitor.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
-          <caret line="317" column="39" lean-forward="false" selection-start-line="317" selection-start-column="39" selection-end-line="317" selection-end-column="39" />
+          <caret line="317" column="32" lean-forward="false" selection-start-line="317" selection-start-column="32" selection-end-line="317" selection-end-column="32" />
           <folding>
             <element signature="e#5806#6140#0" expanded="true" />
           </folding>
