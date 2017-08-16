@@ -259,6 +259,16 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
     return active_conn;
 }
 
+
+long long current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
+}
+
+
 int main(int argc, char *argv[]){
     if(argc != 2){
         fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli");
@@ -326,13 +336,4 @@ int main(int argc, char *argv[]){
     }
 
     return EXIT_SUCCESS;
-}
-
-
-long long current_timestamp() {
-    struct timeval te;
-    gettimeofday(&te, NULL); // get current time
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
-    // printf("milliseconds: %lld\n", milliseconds);
-    return milliseconds;
 }
