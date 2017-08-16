@@ -304,7 +304,7 @@ int main(int argc, char *argv[]){
             perror("sendmsg: ");
             return EXIT_FAILURE;
         }
-        bool end_of_message = false;
+        bool end_of_message = 0;
 
         //The requests can (will in most cases) come as multiple netlink messages. I
         //need to receive all of them. Assumes no packet loss, so if the last packet
@@ -317,7 +317,7 @@ int main(int argc, char *argv[]){
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE) {
                 fprintf(stderr, "hello there\n");
-                end_of_message = true;
+                end_of_message = 1;
                 break;
             }
 
