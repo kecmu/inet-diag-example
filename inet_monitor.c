@@ -185,12 +185,13 @@ int send_diag_msg(int sockfd){
     return retval;
 }
 
-void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
+int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
     struct rtattr *attr;
     struct tcp_info *tcpi;
     char local_addr_buf[INET6_ADDRSTRLEN];
     char remote_addr_buf[INET6_ADDRSTRLEN];
     struct passwd *uid_info = NULL;
+    int active_conn = 0;
 
     memset(local_addr_buf, 0, sizeof(local_addr_buf));
     memset(remote_addr_buf, 0, sizeof(remote_addr_buf));
@@ -210,18 +211,18 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                 remote_addr_buf, INET6_ADDRSTRLEN);
     } else {
         fprintf(stderr, "Unknown family\n");
-        return;
+        return -1;
     }
 
     if(local_addr_buf[0] == 0 || remote_addr_buf[0] == 0){
         fprintf(stderr, "Could not get required connection information\n");
-        return;
+        return -1;
     } else {
-        fprintf(stdout, "User: %s (UID: %u) Src: %s:%d Dst: %s:%d\n",
+        /*fprintf(stdout, "User: %s (UID: %u) Src: %s:%d Dst: %s:%d\n",
                 uid_info == NULL ? "Not found" : uid_info->pw_name,
                 diag_msg->idiag_uid,
                 local_addr_buf, ntohs(diag_msg->id.idiag_sport), 
-                remote_addr_buf, ntohs(diag_msg->id.idiag_dport));
+                remote_addr_buf, ntohs(diag_msg->id.idiag_dport));*/
     }
 
     //Parse the attributes of the netlink message in search of the
@@ -245,16 +246,16 @@ void parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_recv);
-                /*if(tcpi->tcpi_last_data_recv)
-                    fprintf(stdout, "State: %s lastrcv: %s \n",
-                        tcp_states_map[tcpi->tcpi_state],
+                /*fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
                         tcpi->tcpi_last_data_recv);*/
+                if(tcpi->tcpi_last_data_recv < 100)
+                    active_conn += 1;
+
             }
             attr = RTA_NEXT(attr, rtalen); 
         }
     }
+    return active_conn;
 }
 
 int main(int argc, char *argv[]){
@@ -262,6 +263,7 @@ int main(int argc, char *argv[]){
     struct nlmsghdr *nlh;
     uint8_t recv_buf[SOCKET_BUFFER_SIZE];
     struct inet_diag_msg *diag_msg;
+    int current_conn = 0;
 
     //Create the monitoring socket
     if((nl_sock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_INET_DIAG)) == -1){
@@ -281,10 +283,13 @@ int main(int argc, char *argv[]){
     while(1){
         numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
         nlh = (struct nlmsghdr*) recv_buf;
+        current_conn = 0;
 
         while(NLMSG_OK(nlh, numbytes)){
-            if(nlh->nlmsg_type == NLMSG_DONE)
+            if(nlh->nlmsg_type == NLMSG_DONE) {
+                fprintf(stdout, "%u\n", current_conn);
                 return EXIT_SUCCESS;
+            }
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
                 fprintf(stderr, "Error in netlink message\n");
@@ -293,7 +298,9 @@ int main(int argc, char *argv[]){
 
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
             rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
-            parse_diag_msg(diag_msg, rtalen);
+            int tmp = parse_diag_msg(diag_msg, rtalen);
+            if(tmp >= 0)
+                current_conn += tmp;
 
             nlh = NLMSG_NEXT(nlh, numbytes); 
         }
