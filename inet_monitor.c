@@ -302,6 +302,7 @@ int main(int argc, char *argv[]){
             fprintf(stdout, "return result: %u\n", tmp);
             if(tmp >= 0)
                 current_conn += tmp;
+            fprintf(stdout, "intermediate result: %u\n", current_conn);
 
             nlh = NLMSG_NEXT(nlh, numbytes); 
         }
