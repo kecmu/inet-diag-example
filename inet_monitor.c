@@ -276,11 +276,11 @@ int main(int argc, char *argv[]){
     }
     int samples = 0;
     int interval = 0;
-    if (sscanf (argv[0], "%i", &samples) != 1) {
+    if (sscanf (argv[1], "%i", &samples) != 1) {
         fprintf(stderr, "parsing first argument error\n");
         return 0;
     }
-    if (sscanf (argv[1], "%i", &interval) != 1) {
+    if (sscanf (argv[2], "%i", &interval) != 1) {
         fprintf(stderr, "parsing second argument error\n");
         return 0;
     }
