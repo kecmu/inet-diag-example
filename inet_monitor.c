@@ -270,8 +270,8 @@ long long current_timestamp() {
 
 
 int main(int argc, char *argv[]){
-    if(argc != 2){
-        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli; Your have %u arguments.\n", argc);
+    if(argc != 3){
+        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli; Your have %u arguments.\n", argc-1);
         return 0;
     }
     int samples = 0;
