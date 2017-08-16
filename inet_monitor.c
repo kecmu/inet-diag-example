@@ -299,6 +299,7 @@ int main(int argc, char *argv[]){
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
             rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
             int tmp = parse_diag_msg(diag_msg, rtalen);
+            fprintf(stdout, "return result: %u\n", tmp);
             if(tmp >= 0)
                 current_conn += tmp;
 
