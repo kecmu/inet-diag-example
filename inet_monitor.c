@@ -315,6 +315,7 @@ int main(int argc, char *argv[]){
 
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE) {
+                fprintf("hello there");
                 break;
             }
 
