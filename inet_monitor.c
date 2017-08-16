@@ -271,17 +271,17 @@ long long current_timestamp() {
 
 int main(int argc, char *argv[]){
     if(argc != 2){
-        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli");
+        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli; Your have %u arguments.\n", argc);
         return 0;
     }
     int samples = 0;
     int interval = 0;
     if (sscanf (argv[0], "%i", &samples) != 1) {
-        fprintf(stderr, "parsing first argument error");
+        fprintf(stderr, "parsing first argument error\n");
         return 0;
     }
     if (sscanf (argv[1], "%i", &interval) != 1) {
-        fprintf(stderr, "parsing second argument error");
+        fprintf(stderr, "parsing second argument error\n");
         return 0;
     }
 
