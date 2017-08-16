@@ -287,8 +287,7 @@ int main(int argc, char *argv[]){
 
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE) {
-                fprintf(stdout, "total connections: %u\n", current_conn);
-                return EXIT_SUCCESS;
+                break;
             }
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
@@ -299,13 +298,15 @@ int main(int argc, char *argv[]){
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
             rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
             int tmp = parse_diag_msg(diag_msg, rtalen);
-            fprintf(stdout, "return result: %u\n", tmp);
+
             if(tmp >= 0)
                 current_conn += tmp;
             fprintf(stdout, "intermediate result: %u\n", current_conn);
 
             nlh = NLMSG_NEXT(nlh, numbytes); 
         }
+        fprintf(stdout, "return result: %u\n", current_conn);
+        return EXIT_SUCCESS;
     }
 
     return EXIT_SUCCESS;
