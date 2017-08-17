@@ -292,7 +292,7 @@ int query(int idle_thr){
     //need to receive all of them. Assumes no packet loss, so if the last packet
     //(the packet with NLMSG_DONE) is lost, the application will hang.
     while(1){
-        fprintf(stdout, "read bytes: %u, recv_buf size: %u", numbytes, sizeof(recv_buf));
+        fprintf(stdout, "read bytes: %u, recv_buf size: %u\n", numbytes, sizeof(recv_buf));
         numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
         nlh = (struct nlmsghdr*) recv_buf;
         while(NLMSG_OK(nlh, numbytes)){
