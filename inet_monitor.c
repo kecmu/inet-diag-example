@@ -186,7 +186,7 @@ int send_diag_msg(int sockfd){
     return retval;
 }
 
-int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
+int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle){
     struct rtattr *attr;
     struct tcp_info *tcpi;
     char local_addr_buf[INET6_ADDRSTRLEN];
@@ -249,7 +249,7 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
 
                 /*fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
                         tcpi->tcpi_last_data_recv);*/
-                if(tcpi->tcpi_last_data_recv < 100)
+                if(tcpi->tcpi_last_data_recv < idle)
                     active_conn += 1;
 
             }
@@ -269,7 +269,7 @@ long long current_timestamp() {
 }
 
 
-int query(){
+int query(int idle_thr){
     int nl_sock = 0, numbytes = 0, rtalen = 0;
     struct nlmsghdr *nlh;
     uint8_t recv_buf[SOCKET_BUFFER_SIZE];
@@ -305,7 +305,7 @@ int query(){
 
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
             rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
-            int tmp = parse_diag_msg(diag_msg, rtalen);
+            int tmp = parse_diag_msg(diag_msg, rtalen, idle_thr);
             if(tmp >= 0)
                 connections += tmp;
             else
@@ -318,12 +318,13 @@ int query(){
 }
 
 int main(int argc, char *argv[]){
-    if(argc != 3){
-        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli; Your have %u arguments.\n", argc-1);
+    if(argc != 4){
+        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli idle_threshold_in_milli; Your have %u arguments.\n", argc-1);
         return 0;
     }
     int samples = 0;
     int interval = 0;
+    int idle_thr = 0;
     if (sscanf (argv[1], "%i", &samples) != 1) {
         fprintf(stderr, "parsing first argument error\n");
         return 0;
@@ -332,9 +333,13 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "parsing second argument error\n");
         return 0;
     }
+    if (sscanf (argv[3], "%i", &idle_thr) != 1) {
+        fprintf(stderr, "parsing third argument error\n");
+        return 0;
+    }
     int index = 0;
     for(index = 0; index <samples; index++){
-        fprintf(stdout, "%llu, %u\n", current_timestamp(), query());
+        fprintf(stdout, "%llu, %u\n", current_timestamp(), query(idle_thr));
         usleep(interval * 1000);
     }
 
