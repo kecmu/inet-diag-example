@@ -300,6 +300,7 @@ int main(int argc, char *argv[]){
     }
 
     int index = 0;
+    int some_conn_parsed = 0;
     for(index = 0; index <samples; index++){
         //Send the request for the sockets we are interested in
         if(send_diag_msg(nl_sock) < 0){
@@ -307,7 +308,6 @@ int main(int argc, char *argv[]){
             return EXIT_FAILURE;
         }
         int end_of_message = 0;
-        int some_conn_parsed = 0;
         memset(&recv_buf, 0, sizeof(recv_buf));
 
         //The requests can (will in most cases) come as multiple netlink messages. I
@@ -324,6 +324,7 @@ int main(int argc, char *argv[]){
                 end_of_message = 1;
                 if(!some_conn_parsed)
                     fprintf(stdout, "%llu, 0\n", current_timestamp());
+                some_conn_parsed = 0;
                 break;
             }
 
