@@ -269,6 +269,54 @@ long long current_timestamp() {
 }
 
 
+int query(){
+    int nl_sock = 0, numbytes = 0, rtalen = 0;
+    struct nlmsghdr *nlh;
+    uint8_t recv_buf[SOCKET_BUFFER_SIZE];
+    struct inet_diag_msg *diag_msg;
+    int connections = 0;
+
+    //Create the monitoring socket
+    if((nl_sock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_INET_DIAG)) == -1){
+        perror("socket: ");
+        return EXIT_FAILURE;
+    }
+
+    //Send the request for the sockets we are interested in
+    if(send_diag_msg(nl_sock) < 0){
+        perror("sendmsg: ");
+        return EXIT_FAILURE;
+    }
+
+    //The requests can (will in most cases) come as multiple netlink messages. I
+    //need to receive all of them. Assumes no packet loss, so if the last packet
+    //(the packet with NLMSG_DONE) is lost, the application will hang.
+    while(1){
+        numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
+        nlh = (struct nlmsghdr*) recv_buf;
+        while(NLMSG_OK(nlh, numbytes)){
+            if(nlh->nlmsg_type == NLMSG_DONE)
+                return 0;
+
+            if(nlh->nlmsg_type == NLMSG_ERROR){
+                fprintf(stderr, "Error in netlink message\n");
+                return -1;
+            }
+
+            diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
+            rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
+            int tmp = parse_diag_msg(diag_msg, rtalen);
+            if(tmp >= 0)
+                connections += tmp;
+            else
+                return -1;
+
+            nlh = NLMSG_NEXT(nlh, numbytes);
+        }
+        return connections;
+    }
+}
+
 int main(int argc, char *argv[]){
     if(argc != 3){
         fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli; Your have %u arguments.\n", argc-1);
@@ -284,71 +332,9 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "parsing second argument error\n");
         return 0;
     }
-    interval = interval/2;
-    samples = samples*2;
-
-    int nl_sock = 0, numbytes = 0, rtalen = 0;
-    struct nlmsghdr *nlh;
-    uint8_t recv_buf[SOCKET_BUFFER_SIZE];
-    struct inet_diag_msg *diag_msg;
-    int current_conn = 0;
-
-    //Create the monitoring socket
-    if((nl_sock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_INET_DIAG)) == -1){
-        perror("socket: ");
-        return EXIT_FAILURE;
-    }
-
     int index = 0;
-    int some_conn_parsed = 0;
     for(index = 0; index <samples; index++){
-        //Send the request for the sockets we are interested in
-        if(send_diag_msg(nl_sock) < 0){
-            perror("sendmsg: ");
-            return EXIT_FAILURE;
-        }
-        int end_of_message = 0;
-        memset(&recv_buf, 0, sizeof(recv_buf));
-
-        //The requests can (will in most cases) come as multiple netlink messages. I
-        //need to receive all of them. Assumes no packet loss, so if the last packet
-        //(the packet with NLMSG_DONE) is lost, the application will hang.
-
-        numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
-        nlh = (struct nlmsghdr*) recv_buf;
-        current_conn = 0;
-
-        while(NLMSG_OK(nlh, numbytes)){
-            if(nlh->nlmsg_type == NLMSG_DONE) {
-                //fprintf(stderr, "hello there\n");
-                end_of_message = 1;
-                if(!some_conn_parsed) {
-                    fprintf(stdout, "%llu, 0\n", current_timestamp());
-                    usleep(interval * 1000);
-                }
-                some_conn_parsed = 0;
-                break;
-            }
-
-            if(nlh->nlmsg_type == NLMSG_ERROR){
-                fprintf(stderr, "Error in netlink message\n");
-                //return EXIT_FAILURE;
-                break;
-            }
-
-            diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
-            rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
-            int tmp = parse_diag_msg(diag_msg, rtalen);
-            some_conn_parsed = 1;
-
-            if(tmp >= 0)
-                current_conn += tmp;
-            else
-                return 0;
-            nlh = NLMSG_NEXT(nlh, numbytes);
-        }
-        if(!end_of_message)
-            fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
+        fprintf(stdout, "%llu, %u\n", current_timestamp(), query());
         usleep(interval * 1000);
     }
 
