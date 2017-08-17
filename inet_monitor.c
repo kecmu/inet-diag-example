@@ -297,7 +297,7 @@ int query(int idle_thr){
         nlh = (struct nlmsghdr*) recv_buf;
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE)
-                return 0;
+                return connections;
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
                 fprintf(stderr, "Error in netlink message\n");
@@ -314,7 +314,6 @@ int query(int idle_thr){
 
             nlh = NLMSG_NEXT(nlh, numbytes);
         }
-        return connections;
     }
 }
 
