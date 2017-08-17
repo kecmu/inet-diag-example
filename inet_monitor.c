@@ -314,7 +314,8 @@ int main(int argc, char *argv[]){
         nlh = (struct nlmsghdr*) recv_buf;
         current_conn = 0;
 
-        while(NLMSG_OK(nlh, numbytes)){
+        //while(NLMSG_OK(nlh, numbytes)){
+        while(1){
             if(nlh->nlmsg_type == NLMSG_DONE) {
                 fprintf(stderr, "hello there\n");
                 end_of_message = 1;
@@ -333,8 +334,7 @@ int main(int argc, char *argv[]){
 
             if(tmp >= 0)
                 current_conn += tmp;
-            if(!end_of_message)
-                nlh = NLMSG_NEXT(nlh, numbytes);
+            nlh = NLMSG_NEXT(nlh, numbytes);
         }
         fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
         usleep(interval * 1000);
