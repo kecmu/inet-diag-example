@@ -338,9 +338,12 @@ int main(int argc, char *argv[]){
         return 0;
     }
     int index = 0;
+    long long start = 0;
     for(index = 0; index <samples; index++){
-        fprintf(stdout, "%llu, %u\n", current_timestamp(), query(idle_thr));
-        usleep(interval * 1000);
+        start = current_timestamp();
+        fprintf(stdout, "%llu, %u\n", start, query(idle_thr));
+        end = current_timestamp();
+        usleep((interval-(int)(end-start)) * 1000);
     }
 
     return EXIT_SUCCESS;
