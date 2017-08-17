@@ -334,6 +334,8 @@ int main(int argc, char *argv[]){
 
             if(tmp >= 0)
                 current_conn += tmp;
+            else
+                return 0;
             nlh = NLMSG_NEXT(nlh, numbytes);
         }
         fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
