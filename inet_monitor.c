@@ -334,9 +334,10 @@ int main(int argc, char *argv[]){
                 current_conn += tmp;
             nlh = NLMSG_NEXT(nlh, numbytes); 
         }
-        if(!end_of_message)
+        if(!end_of_message) {
             fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
-        usleep(interval*1000);
+            usleep(interval * 1000);
+        }
     }
 
     return EXIT_SUCCESS;
