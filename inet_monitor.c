@@ -307,6 +307,7 @@ int main(int argc, char *argv[]){
             return EXIT_FAILURE;
         }
         int end_of_message = 0;
+        int some_conn_parsed = 0;
         memset(&recv_buf, 0, sizeof(recv_buf));
 
         //The requests can (will in most cases) come as multiple netlink messages. I
@@ -321,6 +322,8 @@ int main(int argc, char *argv[]){
             if(nlh->nlmsg_type == NLMSG_DONE) {
                 //fprintf(stderr, "hello there\n");
                 end_of_message = 1;
+                if(!some_conn_parsed)
+                    fprintf(stdout, "%llu, 0\n", current_timestamp());
                 break;
             }
 
@@ -332,6 +335,7 @@ int main(int argc, char *argv[]){
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
             rtalen = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*diag_msg));
             int tmp = parse_diag_msg(diag_msg, rtalen);
+            some_conn_parsed = 1;
 
             if(tmp >= 0)
                 current_conn += tmp;
