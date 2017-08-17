@@ -307,6 +307,7 @@ int main(int argc, char *argv[]){
             return EXIT_FAILURE;
         }
         int end_of_message = 0;
+        memset(&recv_buf, 0, sizeof(recv_buf));
 
         //The requests can (will in most cases) come as multiple netlink messages. I
         //need to receive all of them. Assumes no packet loss, so if the last packet
