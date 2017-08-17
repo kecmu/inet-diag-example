@@ -322,15 +322,18 @@ int main(int argc, char *argv[]){
             if(nlh->nlmsg_type == NLMSG_DONE) {
                 //fprintf(stderr, "hello there\n");
                 end_of_message = 1;
-                if(!some_conn_parsed)
+                if(!some_conn_parsed) {
                     fprintf(stdout, "%llu, 0\n", current_timestamp());
+                    usleep(interval * 1000);
+                }
                 some_conn_parsed = 0;
                 break;
             }
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
                 fprintf(stderr, "Error in netlink message\n");
-                return EXIT_FAILURE;
+                //return EXIT_FAILURE;
+                break;
             }
 
             diag_msg = (struct inet_diag_msg*) NLMSG_DATA(nlh);
