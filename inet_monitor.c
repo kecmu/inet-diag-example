@@ -247,8 +247,8 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_recv);
+                /*fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
+                        tcpi->tcpi_last_data_recv);*/
                 if(tcpi->tcpi_last_data_recv < 100)
                     active_conn += 1;
 
@@ -285,6 +285,7 @@ int main(int argc, char *argv[]){
         return 0;
     }
     interval = interval/2;
+    samples = samples*2;
 
     int nl_sock = 0, numbytes = 0, rtalen = 0;
     struct nlmsghdr *nlh;
@@ -317,7 +318,7 @@ int main(int argc, char *argv[]){
 
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE) {
-                fprintf(stderr, "hello there\n");
+                //fprintf(stderr, "hello there\n");
                 end_of_message = 1;
                 break;
             }
