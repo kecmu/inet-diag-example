@@ -339,6 +339,7 @@ int main(int argc, char *argv[]){
     }
     int index = 0;
     long long start = 0;
+    long long end = 0;
     for(index = 0; index <samples; index++){
         start = current_timestamp();
         fprintf(stdout, "%llu, %u\n", start, query(idle_thr));
