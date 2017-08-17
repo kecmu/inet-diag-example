@@ -247,8 +247,8 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_last_data_recv);
+                /*fprintf(stdout, "State: %s, last receive: %u \n", tcp_states_map[tcpi->tcpi_state],
+                        tcpi->tcpi_last_data_recv);*/
                 if(tcpi->tcpi_last_data_recv < idle)
                     active_conn += 1;
 
@@ -293,7 +293,7 @@ int query(int idle_thr){
     //(the packet with NLMSG_DONE) is lost, the application will hang.
     while(1){
         numbytes = recv(nl_sock, recv_buf, sizeof(recv_buf), 0);
-        fprintf(stdout, "read bytes: %u, recv_buf size: %u\n", numbytes, sizeof(recv_buf));
+        //fprintf(stdout, "read bytes: %u, recv_buf size: %u\n", numbytes, sizeof(recv_buf));
         nlh = (struct nlmsghdr*) recv_buf;
         while(NLMSG_OK(nlh, numbytes)){
             if(nlh->nlmsg_type == NLMSG_DONE)
