@@ -318,6 +318,8 @@ int main(int argc, char *argv[]){
             if(nlh->nlmsg_type == NLMSG_DONE) {
                 fprintf(stderr, "hello there\n");
                 end_of_message = 1;
+                nlh = NLMSG_NEXT(nlh, numbytes);
+                break;
             }
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
@@ -334,8 +336,7 @@ int main(int argc, char *argv[]){
             if(!end_of_message)
                 nlh = NLMSG_NEXT(nlh, numbytes);
         }
-        if(!end_of_message)
-            fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
+        fprintf(stdout, "%llu, %u\n", current_timestamp(), current_conn);
         usleep(interval * 1000);
     }
 
