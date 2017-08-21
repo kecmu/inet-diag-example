@@ -98,7 +98,7 @@ unsigned char create_filter(void **filter_mem){
     return filter_len;
 }
 
-int send_diag_msg(int sockfd){
+int send_diag_msg(int sockfd, int port_num){
     struct msghdr msg;
     struct nlmsghdr nlh;
     //To request information about unix sockets, this would be replaced with
@@ -148,7 +148,7 @@ int send_diag_msg(int sockfd){
     //Example of how to only match some sockets
     //In order to match a single socket, I have to provide all fields
     //sport/dport, saddr/daddr (look at dump_on_icsk)
-    conn_req.id.idiag_sport=htons(6379);
+    conn_req.id.idiag_sport=htons(port_num);
 
     //Avoid using compat by specifying family + protocol in header
     nlh.nlmsg_type = SOCK_DIAG_BY_FAMILY;
@@ -269,7 +269,7 @@ long long current_timestamp() {
 }
 
 
-int query(int idle_thr){
+int query(int idle_thr, int port){
     int nl_sock = 0, numbytes = 0, rtalen = 0;
     struct nlmsghdr *nlh;
     uint8_t recv_buf[SOCKET_BUFFER_SIZE];
@@ -283,7 +283,7 @@ int query(int idle_thr){
     }
 
     //Send the request for the sockets we are interested in
-    if(send_diag_msg(nl_sock) < 0){
+    if(send_diag_msg(nl_sock, port) < 0){
         perror("sendmsg: ");
         return EXIT_FAILURE;
     }
@@ -318,13 +318,14 @@ int query(int idle_thr){
 }
 
 int main(int argc, char *argv[]){
-    if(argc != 4){
-        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli idle_threshold_in_milli; Your have %u arguments.\n", argc-1);
+    if(argc != 5){
+        fprintf(stderr, "Usage: ./inet_monitor num_samples interval_in_milli idle_threshold_in_milli port; Your have %u arguments.\n", argc-1);
         return 0;
     }
     int samples = 0;
     int interval = 0;
     int idle_thr = 0;
+    int port = 0;
     if (sscanf (argv[1], "%i", &samples) != 1) {
         fprintf(stderr, "parsing first argument error\n");
         return 0;
@@ -337,12 +338,16 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "parsing third argument error\n");
         return 0;
     }
+    if (sscanf (argv[4], "%i", &port) != 1) {
+        fprintf(stderr, "parsing fourth argument error\n");
+        return 0;
+    }
     int index = 0;
     long long start = 0;
     long long end = 0;
     for(index = 0; index <samples; index++){
         start = current_timestamp();
-        fprintf(stdout, "%llu, %u\n", start, query(idle_thr));
+        fprintf(stdout, "%llu, %u\n", start, query(idle_thr, port));
         end = current_timestamp();
         usleep((interval-(int)(end-start)) * 1000);
     }
