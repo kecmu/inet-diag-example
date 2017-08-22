@@ -296,11 +296,14 @@ int query(int idle_thr, int port){
         //fprintf(stdout, "read bytes: %u, recv_buf size: %u\n", numbytes, sizeof(recv_buf));
         nlh = (struct nlmsghdr*) recv_buf;
         while(NLMSG_OK(nlh, numbytes)){
-            if(nlh->nlmsg_type == NLMSG_DONE)
+            if(nlh->nlmsg_type == NLMSG_DONE) {
+                close(nl_sock);
                 return connections;
+            }
 
             if(nlh->nlmsg_type == NLMSG_ERROR){
                 fprintf(stderr, "Error in netlink message\n");
+                close(nl_sock);
                 return -1;
             }
 
