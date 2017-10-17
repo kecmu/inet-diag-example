@@ -247,8 +247,8 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u \n", tcp_states_map[tcpi->tcpi_state],
-                        tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv);
+                /*fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u \n", tcp_states_map[tcpi->tcpi_state],
+                        tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv);*/
                 if(tcpi->tcpi_last_data_recv < idle)
                     active_conn += 1;
 
