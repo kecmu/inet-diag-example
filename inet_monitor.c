@@ -126,7 +126,7 @@ int send_diag_msg(int sockfd, int port_num){
     //used with UDP sockets, DCCP sockets and Unix sockets, to mention a few.
     //This example requests information about TCP sockets bound to IPv4
     //addresses.
-    conn_req.sdiag_family = AF_INET;
+    conn_req.sdiag_family = AF_INET6;
     conn_req.sdiag_protocol = IPPROTO_TCP;
 
     //Filter out some states, to show how it is done
