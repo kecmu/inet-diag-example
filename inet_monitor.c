@@ -131,7 +131,7 @@ int send_diag_msg(int sockfd, int port_num){
 
     //Filter out some states, to show how it is done
     conn_req.idiag_states = TCPF_ALL &
-        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE));
+        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE) | (1<<TCP_LISTEN));
     //conn_req.idiag_states = TCP_ESTABLISHED;
 
     //Request extended TCP information (it is the tcp_info struct)
@@ -247,8 +247,8 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle){
                         tcpi->tcpi_unacked,
                         tcpi->tcpi_snd_cwnd);*/
 
-                if(tcpi->tcpi_state == TCP_LISTEN)
-                    fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u backlog: %u\n", tcp_states_map[tcpi->tcpi_state], tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv, tcpi->tcpi_unacked);
+                //if(tcpi->tcpi_state == TCP_LISTEN)
+                //    fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u backlog: %u\n", tcp_states_map[tcpi->tcpi_state], tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv, tcpi->tcpi_unacked);
                 if(tcpi->tcpi_last_data_recv < idle)
                     active_conn += 1;
 
