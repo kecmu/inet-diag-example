@@ -131,7 +131,7 @@ int send_diag_msg(int sockfd, int port_num){
 
     //Filter out some states, to show how it is done
     conn_req.idiag_states = TCPF_ALL &
-        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE) | (1<<TCP_LISTEN));
+        ~((1<<TCP_SYN_RECV) | (1<<TCP_TIME_WAIT) | (1<<TCP_CLOSE));
     //conn_req.idiag_states = TCP_ESTABLISHED;
 
     //Request extended TCP information (it is the tcp_info struct)
