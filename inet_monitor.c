@@ -361,7 +361,7 @@ int main(int argc, char *argv[]){
         start = current_timestamp();
         query_result = query(idle_thr, port, interval, &active_conn, &new_conn);
         if(query_result==0)
-            fprintf(stdout, "%llu, %u\n", start, active_conn, new_conn);
+            fprintf(stdout, "%llu, %u, %u\n", start, active_conn, new_conn);
         end = current_timestamp();
         usleep((interval-(int)(end-start)) * 1000);
     }
