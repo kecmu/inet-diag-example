@@ -42,6 +42,14 @@
 #include <arpa/inet.h>
 #include <pwd.h>
 #include <sys/time.h>
+#include "uthash.h"
+
+struct remote_conn {
+    int remote_port;            /* we'll use this field as the key */
+    UT_hash_handle hh; /* makes this structure hashable */
+};
+
+struct remote_conn *conns = NULL;
 
 //Kernel TCP states. /include/net/tcp_states.h
 enum{
@@ -257,8 +265,17 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle, int int
                 //fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u backlog: %u\n", tcp_states_map[tcpi->tcpi_state], tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv, tcpi->tcpi_unacked);
                 //if(tcpi->tcpi_last_data_recv < idle)
                 *activeflow += 1;
-                if(tcpi->tcpi_last_data_recv < intv_in_ms)
-                    *newflow += 1;
+                if(tcpi->tcpi_last_data_recv <= intv_in_ms){
+                    int rmt_port = ntohs(diag_msg->id.idiag_dport);
+                    struct remote_conn *find_result;
+                    HASH_FIND_INT(conns, &rmt_port, find_result);
+                    if(find_result==NULL){
+                        find_result = (struct remote_conn*)malloc(sizeof(struct remote_conn));
+                        find_result->remote_port = rmt_port;
+                        HASH_ADD_INT(conns, remote_port, find_result);
+                        *newflow += 1;
+                    }
+                }
             }
             attr = RTA_NEXT(attr, rtalen);
         }
