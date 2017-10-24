@@ -257,7 +257,7 @@ int parse_diag_msg(struct inet_diag_msg *diag_msg, int rtalen, int idle, int int
                 //fprintf(stdout, "State: %s, bytes received: %u, bytes sent: %u, last receive time: %u backlog: %u\n", tcp_states_map[tcpi->tcpi_state], tcpi->tcpi_bytes_received, tcpi->tcpi_bytes_acked, tcpi->tcpi_last_data_recv, tcpi->tcpi_unacked);
                 //if(tcpi->tcpi_last_data_recv < idle)
                 *activeflow += 1;
-                if(tcpi->tcpi_last_data_recv <= intv_in_ms)
+                if(tcpi->tcpi_last_data_recv < intv_in_ms)
                     *newflow += 1;
             }
             attr = RTA_NEXT(attr, rtalen);
